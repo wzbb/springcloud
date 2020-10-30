@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProviderService {
 
-    public String getProvider(){
+    public String getProvider()
+    {
+        //String temp = "吉隆坡-厦门";
+
         return "ribbon-provider";
     }
 }
