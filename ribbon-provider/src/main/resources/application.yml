@@ -3,7 +3,20 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8001/eureka/
 server:
-  port: 8006
+  port: 8000
 spring:
   application:
     name: ribbon-provider
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: NON_NULL
+    time-zone: GMT+8
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    connection-timeout: 15000
+    username: guest
+    password: guest
+    virtual-host: /
+    publisher-confirm-type: correlated
+
