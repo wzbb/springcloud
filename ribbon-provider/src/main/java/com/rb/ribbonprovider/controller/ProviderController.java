@@ -24,6 +24,8 @@ public class ProviderController {
     public String index(){
         return providerService.getProvider();
     }
+
+
     @GetMapping("/sendRabbitMessage")
     public void sendRabbitMessage() throws Exception{
         String content = "testsendRabbitMessage";
@@ -31,4 +33,16 @@ public class ProviderController {
         pro.put("name", "ruanbin");
         rabbitSender.send(content, pro);
     }
+
+    @GetMapping("/testException")
+    public int testException() {
+        String[] arr = new String[5];
+        System.out.println(arr[6]);
+        return 2;
+    }
+    @GetMapping("/testResponseAdvice")
+    public int testResponseAdvice(){
+        return 1;
+    }
+
 }

@@ -3,7 +3,7 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8001/eureka/
 server:
-  port: 8000
+  port: 8006
 spring:
   application:
     name: ribbon-provider
@@ -19,4 +19,5 @@ spring:
     password: guest
     virtual-host: /
     publisher-confirm-type: correlated
+    publisher-returns: true
 

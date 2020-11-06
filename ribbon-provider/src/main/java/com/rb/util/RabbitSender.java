@@ -11,6 +11,7 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,6 +30,24 @@ public class RabbitSender {
         }
     };
 
+    final RabbitTemplate.ReturnCallback returnCallback = new RabbitTemplate.ReturnCallback() {
+        @Override
+        public void returnedMessage(org.springframework.amqp.core.Message message, int replyCode, String replyText, String exchange, String routingKey) {
+            try{
+                System.out.println("replyCode:" + replyCode);
+                System.out.println("replyText:" + replyText);
+                System.out.println("exchange:" + exchange);
+                System.out.println("routingKey:" + routingKey);
+                System.out.println("properties:" + message.getMessageProperties());
+                System.out.println("body:" + new String(message.getBody(), "UTF-8"));
+            }catch (UnsupportedEncodingException e){
+                e.printStackTrace();
+            }
+
+        }
+    };
+
+
     public void send(Object message, Map<String, Object> properties) throws Exception{
         MessageHeaders mhs = new MessageHeaders(properties);
         Message<?> msg = MessageBuilder.createMessage(message, mhs);
@@ -46,7 +65,7 @@ public class RabbitSender {
                 return message;
             }
         };
-
+        rabbitTemplate.convertAndSend("asd-no", "test.r", msg, mpp, correlationData);
         rabbitTemplate.convertAndSend("exchange-1", "springboot.rabbit", msg, mpp, correlationData);
         rabbitTemplate.convertAndSend("order-exchange", "order.rabbit", msg, mpp, correlationData);
     }
