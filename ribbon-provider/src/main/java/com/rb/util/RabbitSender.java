@@ -23,6 +23,10 @@ public class RabbitSender {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    public RabbitSender(RabbitTemplate rabbitTemplate){
+        this.rabbitTemplate = rabbitTemplate;
+    }
+
     final RabbitTemplate.ConfirmCallback confirmCallback = new RabbitTemplate.ConfirmCallback() {
         @Override
         public void confirm(@Nullable CorrelationData correlationData, boolean ack, @Nullable String s) {
@@ -52,6 +56,7 @@ public class RabbitSender {
         MessageHeaders mhs = new MessageHeaders(properties);
         Message<?> msg = MessageBuilder.createMessage(message, mhs);
         rabbitTemplate.setConfirmCallback(confirmCallback);
+        rabbitTemplate.setReturnCallback(returnCallback);
 
         // 	指定业务唯一的iD
         CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
@@ -65,8 +70,30 @@ public class RabbitSender {
                 return message;
             }
         };
-        rabbitTemplate.convertAndSend("asd-no", "test.r", msg, mpp, correlationData);
+
         rabbitTemplate.convertAndSend("exchange-1", "springboot.rabbit", msg, mpp, correlationData);
+
+    }
+
+
+    public void send2(Object message, Map<String, Object> properties) throws Exception{
+        MessageHeaders mhs = new MessageHeaders(properties);
+        Message<?> msg = MessageBuilder.createMessage(message, mhs);
+        rabbitTemplate.setConfirmCallback(confirmCallback);
+        rabbitTemplate.setReturnCallback(returnCallback);
+
+        // 	指定业务唯一的iD
+        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+
+        MessagePostProcessor mpp = new MessagePostProcessor() {
+
+            @Override
+            public org.springframework.amqp.core.Message postProcessMessage(org.springframework.amqp.core.Message message)
+                    throws AmqpException {
+                System.err.println("---> post to do: " + message);
+                return message;
+            }
+        };
         rabbitTemplate.convertAndSend("order-exchange", "order.rabbit", msg, mpp, correlationData);
     }
 }

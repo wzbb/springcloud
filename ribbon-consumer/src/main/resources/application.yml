@@ -18,12 +18,13 @@ spring:
     listener:
       # 最好不要在代码里写死配置信息，尽量使用这种方式也就是配置文件的方式
       # 在代码里使用 	${}	方式进行设置配置: ${spring.rabbitmq.listener.order.exchange.name}
-      order:
-        exchange:
-          durable: true
-          key: order.#
-          name: order-exchange
-          type: topic
+#      order:
+#        exchange:
+#          durable: true
+#          key: order.#
+#          name: order-exchange
+#          type: topic
+
       # 表示消费者消费成功消息以后需要手工的进行签收(ack)，默认为auto
       simple:
         acknowledge-mode: manual
