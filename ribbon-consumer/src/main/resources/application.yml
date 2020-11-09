@@ -4,6 +4,12 @@ eureka:
       defaultZone: http://localhost:8001/eureka/
 server:
   port: 8003
+# Spring 日志策略
+logging:
+  level:
+    com.baomidou.dynamic: info
+    root: info
+
 spring:
   application:
     name: ribbon-consumer
