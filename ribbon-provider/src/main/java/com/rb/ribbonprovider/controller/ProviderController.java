@@ -22,6 +22,8 @@ public class ProviderController {
     ProviderService providerService;
     @Autowired
     RabbitSender rabbitSender;
+    @Autowired
+    Excute excute;
 
     @GetMapping("/index")
     public String index(){
@@ -59,33 +61,37 @@ public class ProviderController {
         AtomicInteger count = new AtomicInteger(0);
         CountDownLatch latch = new CountDownLatch(n);
         CountDownLatch order = new CountDownLatch(1);
-
-
+        excute.setOrder(order);
+        excute.setLatch(latch);
+        excute.setCount(count);
         for(int i = 0; i < n; i++){
-            Excute excute = new Excute(latch, order, count);
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("子线程" + Thread.currentThread().getName() + "开始等待赛跑");
-                    count.incrementAndGet();
+            //Excute excute = new Excute(latch, order, count);
 
-                    String content = count.toString();
-                    Map<String, Object> pro = new HashMap<>();
-                    pro.put("name", "ruanbin");
-                    try {
-                        order.await();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        rabbitSender.send(content, pro);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    latch.countDown();//当前线程调用此方法，则计数减一
-                }
-            });
+            Thread t = new Thread(excute);
             t.start();
+//            Thread t = new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    System.out.println("子线程" + Thread.currentThread().getName() + "开始等待赛跑");
+//                    count.incrementAndGet();
+//
+//                    String content = count.toString();
+//                    Map<String, Object> pro = new HashMap<>();
+//                    pro.put("name", "ruanbin");
+//                    try {
+//                        order.await();
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    try {
+//                        rabbitSender.send(content, pro);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    latch.countDown();//当前线程调用此方法，则计数减一
+//                }
+//            });
+//            t.start();
         }
 
 
@@ -93,7 +99,7 @@ public class ProviderController {
             if(count.intValue() == n) {
                 System.out.println("*******************"+count);
                 try {
-                    Thread.sleep((long) (Math.random() * 10000));
+                    Thread.sleep((long) (Math.random() * 1000));
                     System.out.println("主线程" + Thread.currentThread().getName() + "发令枪，比赛开始");
                     order.countDown();
                     latch.await(); //阻塞当前线程，直到计数器的值为0
